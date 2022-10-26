@@ -13,6 +13,5 @@ Tema: desenvolver uma API Rest para uma plataforma de vídeos
 Instalar as dependências:
 
 ```
-cd todo
 dotnet restore
 ```
