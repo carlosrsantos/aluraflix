@@ -37,8 +37,8 @@ public class VideoController : ControllerBase
       try
       {
         await context.Videos.AddAsync(video);
-        context.SaveChanges();
-        return Ok(video);
+        await context.SaveChangesAsync();
+        return Created($"/videos/{video.Id}", video);
       }
       catch
       {
