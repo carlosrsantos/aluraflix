@@ -1,5 +1,7 @@
 using Aluraflix.Data;
+using Aluraflix.Extensions;
 using Aluraflix.Models;
+using AluraFlix.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,96 +10,111 @@ namespace Aluraflix.Controllers;
 [ApiController]
 public class VideoController : ControllerBase
 {
+  private AluraflixContext _context;
+
+  public VideoController(AluraflixContext context)
+  {
+    _context = context;
+  }
+
   [Route("/videos")]
   [HttpGet]
-  public async Task<IActionResult> GetAsync(
-    [FromServices] AluraflixContext context)
- => Ok(context.Videos.ToList());
-  
+  public async Task<IActionResult> GetAsync()
+  {
+    var videos = await _context.Videos.ToListAsync();
+    return  Ok(new ResultViewModel<List<Video>>(videos));
+  }
+
   [Route("/videos/{id}")]
   [HttpGet]
   public async Task<IActionResult> GetByIdAsync(
-    [FromRoute] int id,
-    [FromServices] AluraflixContext context)
-    {
-      var video = await context.Videos.FirstOrDefaultAsync(x => x.Id == id);
-      if(video != null)
-        return Ok(video);
-      else
-        return NotFound();
-    }
+    [FromRoute] int id)
+  {
+    var video = await _context.Videos.FirstOrDefaultAsync(x => x.Id == id);
+    if (video != null)
+      return Ok(new ResultViewModel<Video>(video));
+    else
+      return NotFound(new ResultViewModel<Video>("Conteúdo não encontrado"));
+  }
 
 
   [Route("/videos")]
   [HttpPost]
   public async Task<IActionResult> PostVideoAsync(
-    [FromBody] Video video,
-    [FromServices] AluraflixContext context)
-    {
-      try
-      {
-        await context.Videos.AddAsync(video);
-        await context.SaveChangesAsync();
-        return Created($"/videos/{video.Id}", video);
-      }
-      catch
-      {
-        return BadRequest("Ops... Verifique as informações e tente novamente.");
-      }      
-    }
-  
-  [Route("/videos/{id}")]
-  [HttpPut]
-  public async  Task<IActionResult> UpdateVideoAsync(
-    [FromRoute] int id,
-    [FromBody] Video video,
-    [FromServices] AluraflixContext context)
- {
+    [FromBody] Video video)
+  {
+
+    if (!ModelState.IsValid)
+      return BadRequest(new ResultViewModel<Video>(ModelState.GetErrors()));
     try
     {
-      var videoToUpdate = await context.Videos.FirstOrDefaultAsync(x => x.Id == id);
-      if(videoToUpdate != null)
-      {
-        videoToUpdate.Id = id;
-        videoToUpdate.Title = video.Title;
-        videoToUpdate.Description = video.Description;
-        videoToUpdate.Url = video.Url;
-
-        context.Videos.Update(videoToUpdate);
-        await context.SaveChangesAsync();
-        return Ok(videoToUpdate);
-      }
-      else
-        return NotFound();
+      var newVideo = new Video{
+        Title = video.Title,
+        Description = video.Description,
+        Url = video.Url
+      };
+      await _context.Videos.AddAsync(newVideo);
+      await _context.SaveChangesAsync();
+      return Created($"/videos/{newVideo.Id}", new ResultViewModel<Video>(newVideo));
+    }
+    catch(DbUpdateException e)
+    {
+      return BadRequest(new ResultViewModel<Video>("Não foi possível incluir o vídeo.Verifique as informações e tente novamente."));
     }
     catch
     {
-      return StatusCode(500, "Falha ao atualizar vídeo.");
+       return StatusCode(500, new ResultViewModel<Video>("Falha interna no servidor"));
     }
- }
- 
-  
+  }
+
+  [Route("/videos/{id}")]
+  [HttpPut]
+  public async Task<IActionResult> UpdateVideoAsync(
+    [FromRoute] int id,
+    [FromBody] Video video)
+  {
+    try
+    {
+      var videoToUpdate = await _context.Videos.FirstOrDefaultAsync(x => x.Id == id);
+      if (videoToUpdate != null)
+      {
+
+        videoToUpdate = video;
+
+        _context.Videos.Update(videoToUpdate);
+        await _context.SaveChangesAsync();
+        return Ok(new ResultViewModel<Video>(videoToUpdate));
+      }
+      else
+        return NotFound(new ResultViewModel<Video>("Conteúdo não encontrado"));
+    }
+    catch
+    {
+      return StatusCode(500, new ResultViewModel<Video>("Falha interna no servidor"));
+    }
+  }
+
+
   [Route("/videos/{id}")]
   [HttpDelete]
   public async Task<IActionResult> DeleteVideoAsync(
-    [FromRoute] int id,
-    [FromServices] AluraflixContext context)
+    [FromRoute] int id)
+  {
+    try
     {
-      try
+      var videoToDelete = await _context.Videos.FirstOrDefaultAsync(x => x.Id == id);
+      if (videoToDelete != null)
       {
-        var videoToDelete = await context.Videos.FirstOrDefaultAsync(x => x.Id == id);
-        if(videoToDelete != null)
-        {
-          context.Videos.Remove(videoToDelete);
-          await context.SaveChangesAsync();
-          return NoContent();
-        }
-        else 
-          return NotFound();        
+        _context.Videos.Remove(videoToDelete);
+        await _context.SaveChangesAsync();
+        return Ok(new ResultViewModel<Video>("Vídeo deletado com sucesso."));
       }
-      catch 
-      {
-        return StatusCode(500, "Falha ao deletar vídeo.");
-      }
+      else
+        return NotFound(new ResultViewModel<Video>("Conteúdo não encontrado"));
     }
+    catch
+    {
+      return StatusCode(500, new ResultViewModel<Video>("Falha ao tentar deletar o vídeo."));
+    }
+  }
 }

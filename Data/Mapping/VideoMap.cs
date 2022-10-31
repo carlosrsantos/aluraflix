@@ -24,6 +24,7 @@ public class VideoMap : IEntityTypeConfiguration<Video>
           .HasMaxLength(30);
 
         builder.Property(x => x.Description)
+          .IsRequired()
           .HasColumnName("Description")
           .HasColumnType("TEXT")
           .HasMaxLength(100);

@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Aluraflix.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,7 +9,16 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<AluraflixContext>(options =>
     options.UseSqlServer(connectionString));
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+        .ConfigureApiBehaviorOptions(options =>
+        {
+            options.SuppressModelStateInvalidFilter = true; //Alterar comportamento da ModelState
+        })
+        .AddJsonOptions(x =>
+        {
+            x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+            x.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault; //nao renderiza objetos nulos
+        });
 
 
 var app = builder.Build();
