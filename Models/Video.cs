@@ -1,12 +1,21 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Aluraflix.Models;
 
 public class Video
 {
   public int Id { get; set; }
 
-  public string Title { get; set; }
+  [Required(ErrorMessage = "O título do vídeo é necessário")]
+  public string Title { get; set; } = "";
 
-  public string Description { get; set; }
+  [Required(ErrorMessage = "A descrição do vídeo é necessária.")]
+  public string Description { get; set; } = "";
 
-  public string Url { get; set; }
+  [Required(ErrorMessage = "A url é necessária.")]
+  [RegularExpression(@"(http(s)?://)?([\w-]+\.)+[\w-]+(/[\w- ;,./?%&=]*)?",
+    ErrorMessage = "É preciso informar uma url válida. Ex. http://meusite.com")]
+  public string Url { get; set; } = "";
+
+
 }
