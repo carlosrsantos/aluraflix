@@ -8,8 +8,10 @@ using Microsoft.EntityFrameworkCore;
 namespace Aluraflix.Controllers;
 
 [ApiController]
+[Route(route)]
 public class VideoController : ControllerBase
 {
+  private const string route = "/api/v1/videos";
   private AluraflixContext _context;
 
   public VideoController(AluraflixContext context)
@@ -17,7 +19,6 @@ public class VideoController : ControllerBase
     _context = context;
   }
 
-  [Route("/videos")]
   [HttpGet]
   public async Task<IActionResult> GetAsync()
   {
@@ -25,8 +26,7 @@ public class VideoController : ControllerBase
     return  Ok(new ResultViewModel<List<Video>>(videos));
   }
 
-  [Route("/videos/{id}")]
-  [HttpGet]
+  [HttpGet("/{id}")]
   public async Task<IActionResult> GetByIdAsync(
     [FromRoute] int id)
   {
@@ -38,7 +38,7 @@ public class VideoController : ControllerBase
   }
 
 
-  [Route("/videos")]
+
   [HttpPost]
   public async Task<IActionResult> PostVideoAsync(
     [FromBody] Video video)
@@ -67,8 +67,7 @@ public class VideoController : ControllerBase
     }
   }
 
-  [Route("/videos/{id}")]
-  [HttpPut]
+  [HttpPut("/{id}")]
   public async Task<IActionResult> UpdateVideoAsync(
     [FromRoute] int id,
     [FromBody] Video video)
@@ -94,9 +93,7 @@ public class VideoController : ControllerBase
     }
   }
 
-
-  [Route("/videos/{id}")]
-  [HttpDelete]
+  [HttpDelete("/{id}")]
   public async Task<IActionResult> DeleteVideoAsync(
     [FromRoute] int id)
   {
