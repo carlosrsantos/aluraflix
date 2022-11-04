@@ -1,3 +1,4 @@
+using Aluraflix.Data.Mapping;
 using Aluraflix.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,8 +14,10 @@ public class AluraflixContext : DbContext
 
   public DbSet<Video> Videos { get; set; }
 
+  public DbSet<Category> Categories { get; set; }
   protected override void OnModelCreating(ModelBuilder modelBuilder)
   {
     modelBuilder.ApplyConfiguration(new VideoMap());
+    modelBuilder.ApplyConfiguration(new CategoryMap());
   }
 }
