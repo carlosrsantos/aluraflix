@@ -17,5 +17,9 @@ public class Video
     ErrorMessage = "É preciso informar uma url válida. Ex. http://meusite.com")]
   public string Url { get; set; } = "";
 
+  [Required(ErrorMessage = "É preciso informar uma categoria.")]
+  public int CategoryId { get; set; }
+  public Category Category { get; set; }
+
 
 }

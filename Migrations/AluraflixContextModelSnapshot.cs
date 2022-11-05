@@ -21,6 +21,34 @@ namespace Aluraflix.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
+            modelBuilder.Entity("Aluraflix.Models.Category", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Color")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("NVARCHAR(30)")
+                        .HasColumnName("Color");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("NVARCHAR(30)")
+                        .HasColumnName("Title");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex(new[] { "Color" }, "IX_Category_Color")
+                        .IsUnique();
+
+                    b.ToTable("Category", (string)null);
+                });
+
             modelBuilder.Entity("Aluraflix.Models.Video", b =>
                 {
                     b.Property<int>("Id")
@@ -28,6 +56,9 @@ namespace Aluraflix.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -49,10 +80,28 @@ namespace Aluraflix.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CategoryId");
+
                     b.HasIndex(new[] { "Title" }, "IX_Video_Title")
                         .IsUnique();
 
                     b.ToTable("Video", (string)null);
+                });
+
+            modelBuilder.Entity("Aluraflix.Models.Video", b =>
+                {
+                    b.HasOne("Aluraflix.Models.Category", "Category")
+                        .WithMany("Videos")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("Aluraflix.Models.Category", b =>
+                {
+                    b.Navigation("Videos");
                 });
 #pragma warning restore 612, 618
         }
