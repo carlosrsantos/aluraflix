@@ -8,10 +8,8 @@ using Microsoft.EntityFrameworkCore;
 namespace Aluraflix.Controllers;
 
 [ApiController]
-[Route(route)]
 public class VideoController : ControllerBase
 {
-  private const string route = "/api/v1/videos";
   private AluraflixContext _context;
 
   public VideoController(AluraflixContext context)
@@ -19,16 +17,18 @@ public class VideoController : ControllerBase
     _context = context;
   }
 
+  [Route("/api/v1/videos")]
   [HttpGet]
   public async Task<IActionResult> GetAsync()
   {
     var videos = await _context.Videos.ToListAsync();
-    return  Ok(new ResultViewModel<List<Video>>(videos));
+    return Ok(new ResultViewModel<List<Video>>(videos));
   }
 
-  [HttpGet("/{id}")]
+  [Route("/api/v1/videos/{id}")]
+  [HttpGet]
   public async Task<IActionResult> GetByIdAsync(
-    [FromRoute] int id)
+     [FromRoute] int id)
   {
     var video = await _context.Videos.FirstOrDefaultAsync(x => x.Id == id);
     if (video != null)
@@ -39,6 +39,7 @@ public class VideoController : ControllerBase
 
 
 
+  [Route("/api/v1/videos")]
   [HttpPost]
   public async Task<IActionResult> PostVideoAsync(
     [FromBody] Video video)
@@ -48,7 +49,8 @@ public class VideoController : ControllerBase
       return BadRequest(new ResultViewModel<Video>(ModelState.GetErrors()));
     try
     {
-      var newVideo = new Video{
+      var newVideo = new Video
+      {
         Title = video.Title,
         Description = video.Description,
         Url = video.Url
@@ -57,17 +59,18 @@ public class VideoController : ControllerBase
       await _context.SaveChangesAsync();
       return Created($"/videos/{newVideo.Id}", new ResultViewModel<Video>(newVideo));
     }
-    catch(DbUpdateException e)
+    catch (DbUpdateException e)
     {
       return BadRequest(new ResultViewModel<Video>("Não foi possível incluir o vídeo.Verifique as informações e tente novamente."));
     }
     catch
     {
-       return StatusCode(500, new ResultViewModel<Video>("Falha interna no servidor"));
+      return StatusCode(500, new ResultViewModel<Video>("Falha interna no servidor"));
     }
   }
 
-  [HttpPut("/{id}")]
+  [Route("/api/v1/videos/{id}")]
+  [HttpPut]
   public async Task<IActionResult> UpdateVideoAsync(
     [FromRoute] int id,
     [FromBody] Video video)
@@ -77,9 +80,7 @@ public class VideoController : ControllerBase
       var videoToUpdate = await _context.Videos.FirstOrDefaultAsync(x => x.Id == id);
       if (videoToUpdate != null)
       {
-
         videoToUpdate = video;
-
         _context.Videos.Update(videoToUpdate);
         await _context.SaveChangesAsync();
         return Ok(new ResultViewModel<Video>(videoToUpdate));
@@ -93,9 +94,10 @@ public class VideoController : ControllerBase
     }
   }
 
-  [HttpDelete("/{id}")]
+  [Route("/api/v1/videos/{id}")]
+  [HttpDelete]
   public async Task<IActionResult> DeleteVideoAsync(
-    [FromRoute] int id)
+     [FromRoute] int id)
   {
     try
     {

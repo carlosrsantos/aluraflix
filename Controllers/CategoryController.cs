@@ -9,11 +9,8 @@ using Microsoft.EntityFrameworkCore;
 namespace Aluraflix.Controllers;
 
 [ApiController]
-[Route(route)]
 public class CategoryController : ControllerBase
 {
-  private const string route = "/api/v1/categories";
-
   private AluraflixContext _context;
 
   public CategoryController(AluraflixContext context)
@@ -21,26 +18,27 @@ public class CategoryController : ControllerBase
     _context = context;
   }
 
+  [Route("/api/v1/categories")]
   [HttpGet]
   public async Task<IActionResult> GetAsync()
   {
     var Categories = await _context.Categories.ToListAsync();
-    return  Ok(new ResultViewModel<List<Category>>(Categories));
+    return Ok(new ResultViewModel<List<Category>>(Categories));
   }
 
-  [HttpGet("/{id}")]
+  [Route("/api/v1/categories/{id}")]
+  [HttpGet]
   public async Task<IActionResult> GetByIdAsync(
     [FromRoute] int id)
   {
-    var Category = await _context.Categories.FirstOrDefaultAsync(x => x.Id == id);
-    if (Category != null)
-      return Ok(new ResultViewModel<Category>(Category));
+    var category = await _context.Categories.FirstOrDefaultAsync(x => x.Id == id);
+    if (category != null)
+      return Ok(new ResultViewModel<Category>(category));
     else
       return NotFound(new ResultViewModel<Category>("Categoria não encontrada."));
   }
 
-
-
+  [Route("/api/v1/categories")]
   [HttpPost]
   public async Task<IActionResult> PostCategoryAsync(
     [FromBody] EditorCategoryViewModel category)
@@ -50,30 +48,35 @@ public class CategoryController : ControllerBase
       return BadRequest(new ResultViewModel<Category>(ModelState.GetErrors()));
     try
     {
-      var newCategory = new Category{
+      var newCategory = new Category
+      {
         Title = category.Title,
         Color = category.Color,
         Videos = null
       };
       await _context.Categories.AddAsync(newCategory);
       await _context.SaveChangesAsync();
-      return Created($"{route}/{newCategory.Id}", new ResultViewModel<Category>(newCategory));
+      return Created($"/api/categories/{newCategory.Id}", new ResultViewModel<Category>(newCategory));
     }
-    catch(DbUpdateException e)
+    catch (DbUpdateException e)
     {
       return BadRequest(new ResultViewModel<Category>("Não foi possível incluir a categoria.Verifique as informações e tente novamente."));
     }
     catch
     {
-       return StatusCode(500, new ResultViewModel<Category>("Falha interna no servidor"));
+      return StatusCode(500, new ResultViewModel<Category>("Falha interna no servidor"));
     }
   }
 
-  [HttpPut("/{id}")]
+  [Route("/api/v1/categories/{id}")]
+  [HttpPut]
   public async Task<IActionResult> UpdateCategoryAsync(
     [FromRoute] int id,
     [FromBody] EditorCategoryViewModel category)
   {
+    if (!ModelState.IsValid)
+      return BadRequest(new ResultViewModel<Category>(ModelState.GetErrors()));
+
     try
     {
       var categoryToUpdate = await _context.Categories.FirstOrDefaultAsync(x => x.Id == id);
@@ -96,7 +99,8 @@ public class CategoryController : ControllerBase
     }
   }
 
-  [HttpDelete("/{id}")]
+  [Route("/api/v1/categories/{id}")]
+  [HttpDelete]
   public async Task<IActionResult> DeleteCategoryAsync(
     [FromRoute] int id)
   {
