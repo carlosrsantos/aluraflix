@@ -2,6 +2,7 @@ using Aluraflix.Data;
 using Aluraflix.Extensions;
 using Aluraflix.Models;
 using Aluraflix.ViewModel.Categories;
+using Aluraflix.ViewModels.Videos;
 using AluraFlix.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -119,6 +120,35 @@ public class CategoryController : ControllerBase
     catch
     {
       return StatusCode(500, new ResultViewModel<Category>("Falha ao tentar deletar a categoria."));
+    }
+  }
+
+  [Route("/api/v1/categories/{id}/videos")]
+  [HttpGet]
+  public async Task<IActionResult> GetVideosByCategory([FromRoute] int id)
+  {
+    try
+    {
+      var videos = await _context
+        .Videos
+        .AsNoTracking()
+        .Include(x => x.Category)
+        .Where(x => x.Category.Id == id)
+        .Select(x => new ListVideosViewModel
+        {
+          Id = x.Id,
+          Title = x.Title,
+          Description = x.Description,
+          Url = x.Url,
+          Category = x.Category.Title
+        }
+        )
+        .ToListAsync();
+      return Ok(new ResultViewModel<dynamic>(new { videos }));
+    }
+    catch
+    {
+      return StatusCode(500, new ResultViewModel<Category>("Falha interna no servidor"));
     }
   }
 }

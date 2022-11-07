@@ -19,7 +19,7 @@ public class Video
 
   [Required(ErrorMessage = "É preciso informar uma categoria.")]
   public int CategoryId { get; set; }
-  public Category Category { get; set; }
+  public Category Category { get; set; } = null;
 
 
 }
