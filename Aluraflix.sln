@@ -5,6 +5,8 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aluraflix", "Aluraflix.csproj", "{3EB7EF01-1570-4692-928C-62E6035F149B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aluraflix.Tests", "..\Aluraflix.Tests\Aluraflix.Tests.csproj", "{1A7DB93E-4E43-4D72-8C61-8AECE2B452B8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{3EB7EF01-1570-4692-928C-62E6035F149B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3EB7EF01-1570-4692-928C-62E6035F149B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3EB7EF01-1570-4692-928C-62E6035F149B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1A7DB93E-4E43-4D72-8C61-8AECE2B452B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A7DB93E-4E43-4D72-8C61-8AECE2B452B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1A7DB93E-4E43-4D72-8C61-8AECE2B452B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1A7DB93E-4E43-4D72-8C61-8AECE2B452B8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
