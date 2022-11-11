@@ -19,7 +19,7 @@ public class Video
 
         set
         {
-            if (String.IsNullOrEmpty(value))
+            if (string.IsNullOrEmpty(value))
                 throw new ValidationException("O título do vídeo é necessário");
 
             if (value.Length < 3 || value.Length > 30)
@@ -40,7 +40,7 @@ public class Video
 
         set
         {
-            if (String.IsNullOrEmpty(value))
+            if (string.IsNullOrEmpty(value))
                 throw new ValidationException("A descrição do vídeo é necessária.");
 
             _description = value;
@@ -56,7 +56,7 @@ public class Video
         } 
         set
         {
-            if (String.IsNullOrEmpty(value))
+            if (string.IsNullOrEmpty(value))
                 throw new ValidationException("A url é necessária.");
             if (!IsValidUrl(value))
                 throw new ValidationException("É preciso informar uma url válida.Ex.http://meusite.com");
