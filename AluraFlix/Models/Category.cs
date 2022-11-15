@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 
 namespace Aluraflix.Models;
@@ -7,6 +6,7 @@ public class Category
     public int Id { get; set; }
 
     private string _title = "";
+
     public string Title
     {
         get
@@ -17,10 +17,10 @@ public class Category
         set
         {
             if (string.IsNullOrEmpty(value))
-                throw new ValidationException("O título do vídeo é necessário");
+                throw new Exception("O título da categoria é necessário.");
 
             if (value.Length < 3 || value.Length > 30)
-                throw new ValidationException("O título deve conter entre 3 e 30 caracteres");
+                throw new Exception("O título deve conter entre 3 e 30 caracteres");
 
             _title = value;
         }
@@ -36,9 +36,9 @@ public class Category
         set
         {
             if (string.IsNullOrEmpty(value))
-                throw new ValidationException("É preciso informar uma cor em Hexadecimal.");
+                throw new Exception("É preciso informar uma cor em Hexadecimal.");
             if (!IsValidColor(value))
-                throw new ValidationException("Formato de cor inválida. Tente seguindo o exemplo: #fff, #000");
+                throw new Exception("Formato de cor inválida. Tente seguindo o exemplo: #fff, #000");
             _color = value;
 
         }

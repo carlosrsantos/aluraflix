@@ -1,5 +1,6 @@
 ﻿
 
+
 using Aluraflix.Models;
 using Xunit.Abstractions;
 
@@ -28,10 +29,23 @@ namespace Aluraflix.Tests.Models
         {
             var color = "black";
 
-            Assert.Throws<System.ComponentModel.DataAnnotations.ValidationException>
+            Assert.Throws<Exception>
             (
                 () => new Category().Color = color
             );
+        }
+
+        [Fact]
+        public void CategoryWithoutTitle()
+        {
+            var title = "";
+
+            var exception = Assert.Throws<Exception>
+            (
+                () => new Category().Title = title
+            );
+
+            Assert.Equal("O título da categoria é necessária.", exception.Message);
         }
     }
 }
