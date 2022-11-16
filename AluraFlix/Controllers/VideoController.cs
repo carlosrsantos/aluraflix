@@ -11,7 +11,7 @@ namespace Aluraflix.Controllers;
 [ApiController]
 public class VideoController : ControllerBase
 {
-    private AluraflixContext _context;
+    private readonly AluraflixContext _context;
 
     public VideoController(AluraflixContext context)
     {
@@ -25,7 +25,7 @@ public class VideoController : ControllerBase
        [FromQuery] int pageSize = 5
     )
     {
-
+        var count = await _context.Videos.AsNoTracking().CountAsync();
         var videos = await _context
             .Videos
             .AsNoTracking()
@@ -33,7 +33,16 @@ public class VideoController : ControllerBase
             .Take(pageSize)
             .OrderBy(x => x.Id)
             .ToListAsync();
-        return Ok(new ResultViewModel<List<Video>>(videos));
+        return Ok(new ResultViewModel<dynamic>
+                (new
+                {
+                    total = count,
+                    page,
+                    pageSize,
+                    videos
+                }
+                )
+            );
     }
 
     [Route("/api/v1/videos/{id}")]
@@ -135,13 +144,14 @@ public class VideoController : ControllerBase
     [Route("/api/v1/videos/category/")]
     [HttpGet]
     public async Task<IActionResult> GetVideosBySearchCategoryTitle(
-        [FromQuery] string? search,
+        [FromQuery] string search,
         [FromQuery] int page = 0,
         [FromQuery] int pageSize = 5
     )
     {
         if (string.IsNullOrEmpty(search))
         {
+            var count = await _context.Videos.AsNoTracking().CountAsync();
             var videos = await _context
               .Videos
               .AsNoTracking()
@@ -159,15 +169,25 @@ public class VideoController : ControllerBase
               .Take(pageSize)
               .OrderBy(x => x.Id)
               .ToListAsync();
-            return Ok(new ResultViewModel<dynamic>(new { videos }));
+            return Ok(new ResultViewModel<dynamic>
+               (new
+               {
+                   total = count,
+                   page,
+                   pageSize,
+                   videos
+               }
+               )
+            );
         }
         try
         {
+            var count = await _context.Videos.AsNoTracking().Where(x => x.Category.Title == search.ToUpper()).CountAsync();
             var videos = await _context
               .Videos
               .AsNoTracking()
               .Include(x => x.Category)
-              .Where(x => x.Category.Title == search)
+              .Where(x => x.Category.Title == search.ToUpper())
               .Select(x => new ListVideosViewModel
               {
                   Id = x.Id,
@@ -181,7 +201,16 @@ public class VideoController : ControllerBase
               .Take(pageSize)
               .OrderBy(x => x.Id)
               .ToListAsync();
-            return Ok(new ResultViewModel<dynamic>(new { videos }));
+            return Ok(new ResultViewModel<dynamic>
+                (new 
+                    { 
+                        total = count,
+                        page, 
+                        pageSize,
+                        videos 
+                    }
+                )
+            );
         }
         catch
         {
