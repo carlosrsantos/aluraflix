@@ -25,18 +25,20 @@ namespace Aluraflix.Tests.Models
 
         [Fact]
 
-        public void Test_Category_Color_Is_Invalid()
+        public void ShouldErrorWhenColorIsInvalid()
         {
-            var color = "black";
+            var color = "pink";
 
-            Assert.Throws<Exception>
+            var exception = Assert.Throws<Exception>
             (
                 () => new Category().Color = color
             );
+
+            Assert.Equal("Formato de cor inválida. Tente seguindo o exemplo: #fff, #000", exception.Message);
         }
 
         [Fact]
-        public void CategoryWithoutTitle()
+        public void ShouldErrorWhenTitleIsEmpty()
         {
             var title = "";
 
@@ -45,7 +47,20 @@ namespace Aluraflix.Tests.Models
                 () => new Category().Title = title
             );
 
-            Assert.Equal("O título da categoria é necessária.", exception.Message);
+            Assert.Equal("O título da categoria é necessário.", exception.Message);
+        }
+
+        [Fact]
+        public void ShouldErrorWhenTitleHasInvalidValue()
+        {
+            var title = "gKx9TpIHfE2LC4hZJpKzg1UeBK0gLQZ";
+
+            var exception = Assert.Throws<Exception>
+            (
+                () => new Category().Title = title
+            );
+
+            Assert.Equal("O título deve conter entre 3 e 30 caracteres.", exception.Message);
         }
     }
 }

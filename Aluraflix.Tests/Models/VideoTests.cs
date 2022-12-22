@@ -22,57 +22,64 @@ namespace Aluraflix.Tests.Models
         }
 
         [Fact]
-        public void Test_Video_Title_Is_Empty()
-        {
+        public void ShouldErrorWhenTitleIsEmpty()
+        {   
+            //Arrange
             string title = "";
 
-            Assert.Throws<System.ComponentModel.DataAnnotations.ValidationException>
+            var exception = Assert.Throws<Exception>
             (
                 //Act
                 () => new Video().Title = title
 
             );
 
+            //Assert
+            Assert.Equal("O título do vídeo é necessário.",exception.Message);
         }
         
         [Fact]
-        public void Test_Video_Description_Is_Empty()
+        public void ShouldErrorWhenDescriptionIsNull()
         {
             string description = "";
 
-            Assert.Throws<System.ComponentModel.DataAnnotations.ValidationException>
+            var exception = Assert.Throws<Exception>
             (
                 //Act
                 () => new Video().Description = description
 
             );
 
+            Assert.Equal("A descrição do vídeo é necessária.", exception.Message);
         }
 
 
         [Fact]
-        public void Test_Video_Title_Is_Shorter_Than_3_Letters()
+        public void ShouldErrorWhenTitleHasInvalidTitle()
         {
             string title = "Oz";
 
-            Assert.Throws<System.ComponentModel.DataAnnotations.ValidationException>
+            var exception = Assert.Throws<Exception>
             (
                 //Act
                 () => new Video().Title = title
             );
 
+            Assert.Equal("O título deve conter entre 3 e 30 caracteres.",exception.Message);
         }
 
         [Fact]
-        public void Test_Video_Url_Is_Invalid()
+        public void ShouldErrorWhenUrlIsInvalid()
         {
             string url = "wwwtestecom";
 
-            Assert.Throws<System.ComponentModel.DataAnnotations.ValidationException>
+            var exception = Assert.Throws<Exception>
             (
                 //Act
                 () => new Video().Url = url
             );
+
+            Assert.Equal("É preciso informar uma url válida.Ex.http://meusite.com", exception.Message);
 
         }
     }

@@ -20,7 +20,7 @@ public class Category
                 throw new Exception("O título da categoria é necessário.");
 
             if (value.Length < 3 || value.Length > 30)
-                throw new Exception("O título deve conter entre 3 e 30 caracteres");
+                throw new Exception("O título deve conter entre 3 e 30 caracteres.");
 
             _title = value;
         }

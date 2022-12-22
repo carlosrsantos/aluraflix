@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 
 namespace Aluraflix.Models;
@@ -6,10 +5,7 @@ namespace Aluraflix.Models;
 public class Video
 {
     public int Id { get; set; }
-
-
     private string _title ="";
-  
     public string Title
     {
         get
@@ -20,10 +16,10 @@ public class Video
         set
         {
             if (string.IsNullOrEmpty(value))
-                throw new ValidationException("O título do vídeo é necessário");
+                throw new Exception("O título do vídeo é necessário.");
 
             if (value.Length < 3 || value.Length > 30)
-                throw new ValidationException("O título deve conter entre 3 e 30 caracteres");
+                throw new Exception("O título deve conter entre 3 e 30 caracteres.");
 
             _title = value;
         }
@@ -41,7 +37,7 @@ public class Video
         set
         {
             if (string.IsNullOrEmpty(value))
-                throw new ValidationException("A descrição do vídeo é necessária.");
+                throw new Exception("A descrição do vídeo é necessária.");
 
             _description = value;
         }
@@ -57,9 +53,9 @@ public class Video
         set
         {
             if (string.IsNullOrEmpty(value))
-                throw new ValidationException("A url é necessária.");
+                throw new Exception("A url é necessária.");
             if (!IsValidUrl(value))
-                throw new ValidationException("É preciso informar uma url válida.Ex.http://meusite.com");
+                throw new Exception("É preciso informar uma url válida.Ex.http://meusite.com");
             _url = value;
 
         }
