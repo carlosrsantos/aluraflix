@@ -24,7 +24,7 @@ public class CategoryController : ControllerBase
     public async Task<IActionResult> GetAsync(
         [FromQuery] int page = 0,
         [FromQuery] int pageSize = 5
-      )
+    )
     {
         var count = await _context.Categories.AsNoTracking().CountAsync();
         var categories = await _context
@@ -61,7 +61,7 @@ public class CategoryController : ControllerBase
     [Route("/api/v1/categories")]
     [HttpPost]
     public async Task<IActionResult> PostCategoryAsync(
-      [FromBody] EditorCategoryViewModel category)
+        [FromBody] EditorCategoryViewModel category)
     {
 
         if (!ModelState.IsValid)
@@ -91,8 +91,8 @@ public class CategoryController : ControllerBase
     [Route("/api/v1/categories/{id}")]
     [HttpPut]
     public async Task<IActionResult> UpdateCategoryAsync(
-      [FromRoute] int id,
-      [FromBody] EditorCategoryViewModel category)
+        [FromRoute] int id,
+        [FromBody] EditorCategoryViewModel category)
     {
         if (!ModelState.IsValid)
             return BadRequest(new ResultViewModel<Category>(ModelState.GetErrors()));
@@ -122,7 +122,7 @@ public class CategoryController : ControllerBase
     [Route("/api/v1/categories/{id}")]
     [HttpDelete]
     public async Task<IActionResult> DeleteCategoryAsync(
-      [FromRoute] int id)
+        [FromRoute] int id)
     {
         try
         {
@@ -158,33 +158,33 @@ public class CategoryController : ControllerBase
                 .Where(x => x.Category.Id == id)
                 .CountAsync();
             var videos = await _context
-              .Videos
-              .AsNoTracking()
-              .Include(x => x.Category)
-              .Where(x => x.Category.Id == id)
-              .Select(x => new ListVideosViewModel
-              {
-                  Id = x.Id,
-                  Title = x.Title,
-                  Description = x.Description,
-                  Url = x.Url,
-                  Category = x.Category.Title
-              }
-              )
-              .Skip(page * pageSize)
-              .Take(pageSize)
-              .OrderBy(x => x.Id)
-              .ToListAsync();
-            return Ok(new ResultViewModel<dynamic>
-               (new
-               {
-                   total = count,
-                   page = page,
-                   pageSize,
-                   videos
-               }
-               )
-           );
+                .Videos
+                .AsNoTracking()
+                .Include(x => x.Category)
+                .Where(x => x.Category.Id == id)
+                .Select(x => new ListVideosViewModel
+                {
+                    Id = x.Id,
+                    Title = x.Title,
+                    Description = x.Description,
+                    Url = x.Url,
+                    Category = x.Category.Title
+                }
+                )
+                .Skip(page * pageSize)
+                .Take(pageSize)
+                .OrderBy(x => x.Id)
+                .ToListAsync();
+                return Ok(new ResultViewModel<dynamic>
+                (new
+                {
+                    total = count,
+                    page = page,
+                    pageSize,
+                    videos
+                }
+                )
+            );
         }
         catch
         {

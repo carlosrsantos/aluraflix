@@ -21,8 +21,8 @@ public class VideoController : ControllerBase
     [Route("/api/v1/videos")]
     [HttpGet]
     public async Task<IActionResult> GetAsync(
-       [FromQuery] int page = 0,
-       [FromQuery] int pageSize = 5
+        [FromQuery] int page = 0,
+        [FromQuery] int pageSize = 5
     )
     {
         var count = await _context.Videos.AsNoTracking().CountAsync();
@@ -48,7 +48,7 @@ public class VideoController : ControllerBase
     [Route("/api/v1/videos/{id}")]
     [HttpGet]
     public async Task<IActionResult> GetByIdAsync(
-       [FromRoute] int id)
+        [FromRoute] int id)
     {
         var video = await _context.Videos.FirstOrDefaultAsync(x => x.Id == id);
         if (video != null)
@@ -62,7 +62,7 @@ public class VideoController : ControllerBase
     [Route("/api/v1/videos")]
     [HttpPost]
     public async Task<IActionResult> PostVideoAsync(
-      [FromBody] EditorVideoViewModel video)
+        [FromBody] EditorVideoViewModel video)
     {
 
         if (!ModelState.IsValid)
@@ -93,8 +93,8 @@ public class VideoController : ControllerBase
     [Route("/api/v1/videos/{id}")]
     [HttpPut]
     public async Task<IActionResult> UpdateVideoAsync(
-      [FromRoute] int id,
-      [FromBody] EditorVideoViewModel video)
+        [FromRoute] int id,
+        [FromBody] EditorVideoViewModel video)
     {
         try
         {
@@ -121,7 +121,7 @@ public class VideoController : ControllerBase
     [Route("/api/v1/videos/{id}")]
     [HttpDelete]
     public async Task<IActionResult> DeleteVideoAsync(
-       [FromRoute] int id)
+        [FromRoute] int id)
     {
         try
         {
@@ -141,7 +141,7 @@ public class VideoController : ControllerBase
         }
     }
 
-    [Route("/api/v1/videos/category/")]
+    [Route("/api/v1/videos/category")]
     [HttpGet]
     public async Task<IActionResult> GetVideosBySearchCategoryTitle(
         [FromQuery] string search,
@@ -153,54 +153,54 @@ public class VideoController : ControllerBase
         {
             var count = await _context.Videos.AsNoTracking().CountAsync();
             var videos = await _context
-              .Videos
-              .AsNoTracking()
-              .Include(x => x.Category)
-              .Select(x => new ListVideosViewModel
-              {
-                  Id = x.Id,
-                  Title = x.Title,
-                  Description = x.Description,
-                  Url = x.Url,
-                  Category = x.Category.Title
-              }
-              )
-              .Skip(page * pageSize)
-              .Take(pageSize)
-              .OrderBy(x => x.Id)
-              .ToListAsync();
+                .Videos
+                .AsNoTracking()
+                .Include(x => x.Category)
+                .Select(x => new ListVideosViewModel
+                {
+                    Id = x.Id,
+                    Title = x.Title,
+                    Description = x.Description,
+                    Url = x.Url,
+                    Category = x.Category.Title
+                }
+                )
+                .Skip(page * pageSize)
+                .Take(pageSize)
+                .OrderBy(x => x.Id)
+                .ToListAsync();
             return Ok(new ResultViewModel<dynamic>
-               (new
-               {
-                   total = count,
-                   page,
-                   pageSize,
-                   videos
-               }
-               )
+                (new
+                {
+                    total = count,
+                    page,
+                    pageSize,
+                    videos
+                }
+                )
             );
         }
         try
         {
             var count = await _context.Videos.AsNoTracking().Where(x => x.Category.Title == search.ToUpper()).CountAsync();
             var videos = await _context
-              .Videos
-              .AsNoTracking()
-              .Include(x => x.Category)
-              .Where(x => x.Category.Title == search.ToUpper())
-              .Select(x => new ListVideosViewModel
-              {
-                  Id = x.Id,
-                  Title = x.Title,
-                  Description = x.Description,
-                  Url = x.Url,
-                  Category = x.Category.Title
-              }
-              )
-              .Skip(page * pageSize)
-              .Take(pageSize)
-              .OrderBy(x => x.Id)
-              .ToListAsync();
+                .Videos
+                .AsNoTracking()
+                .Include(x => x.Category)
+                .Where(x => x.Category.Title == search.ToUpper())
+                .Select(x => new ListVideosViewModel
+                {
+                    Id = x.Id,
+                    Title = x.Title,
+                    Description = x.Description,
+                    Url = x.Url,
+                    Category = x.Category.Title
+                }
+                )
+                .Skip(page * pageSize)
+                .Take(pageSize)
+                .OrderBy(x => x.Id)
+                .ToListAsync();
             return Ok(new ResultViewModel<dynamic>
                 (new 
                     { 
