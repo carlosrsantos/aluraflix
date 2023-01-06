@@ -1,5 +1,6 @@
 using Aluraflix.Data;
 using Aluraflix.Models;
+using Aluraflix.ViewModel.Categories;
 using Microsoft.EntityFrameworkCore;
 
 namespace AluraFlix.Repositories;
@@ -8,9 +9,13 @@ public class CategoryRepository : IRepository<Category>
 {
   private AluraflixContext _context;
 
+  public CategoryRepository(AluraflixContext context)
+  {
+    _context = context;
+  }
+
   public IReadOnlyList<Category> GetAll(int page, int pageSize)
   {
-    
     var categories = _context
         .Categories
         .AsNoTracking()
@@ -20,28 +25,32 @@ public class CategoryRepository : IRepository<Category>
         .ToList();
     return categories;   
   }
-
-  public Category GetById(int id)
+  public decimal? Total()
   {
-    throw new NotImplementedException();
+    return _context.Categories.Count();
   }
 
-  public void Post(Category entity)
+  public Category? GetById(int id)
   {
-    throw new NotImplementedException();
+    var category = _context.Categories.FirstOrDefault(x => x.Id == id);
+    return category != null ? category : null;
   }
 
-  public void Update(int id, Category entity)
-  {
-    throw new NotImplementedException();
-  }
-  public void Delete(int id)
-  {
-    throw new NotImplementedException();
+  public Category Post(Category entity)
+  {    
+    _context.Categories.Add(entity);
+    _context.SaveChanges();
+    return entity;
   }
 
-  public decimal Total()
+  public void Update(Category entity)
   {
-    return _context.Categories.AsNoTracking().Count();
+    _context.Categories.Update(entity);
+    _context.SaveChanges();
+  }
+  public void Delete(Category entity)
+  {
+    _context.Categories.Remove(entity);
+    _context.SaveChanges();
   }
 }

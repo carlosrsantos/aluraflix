@@ -3,6 +3,7 @@ using Aluraflix.Extensions;
 using Aluraflix.Models;
 using Aluraflix.ViewModel.Categories;
 using Aluraflix.ViewModels.Videos;
+using AluraFlix.Repositories;
 using AluraFlix.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,11 +13,13 @@ namespace Aluraflix.Controllers;
 [ApiController]
 public class CategoryController : ControllerBase
 {
+    private CategoryRepository _categoryRepository;
     private AluraflixContext _context;
 
-    public CategoryController(AluraflixContext context)
+    public CategoryController(AluraflixContext context, CategoryRepository categoryRepository)
     {
         _context = context;
+        _categoryRepository = categoryRepository;
     }
 
     [Route("/api/v1/categories")]
@@ -26,32 +29,33 @@ public class CategoryController : ControllerBase
         [FromQuery] int pageSize = 5
     )
     {
-        var count = await _context.Categories.AsNoTracking().CountAsync();
-        var categories = await _context
-            .Categories
-            .AsNoTracking()
-            .Skip(page * pageSize)
-            .Take(pageSize)
-            .OrderBy(x => x.Id)
-            .ToListAsync();
-        return Ok(new ResultViewModel<dynamic>
-                (new
-                {
-                    total = count,
-                    page,
-                    pageSize,
-                    categories
-                }
-                )
-            );
+        try{
+
+            var count = _categoryRepository.Total();
+            var categories = _categoryRepository.GetAll(page, pageSize);
+            return Ok(new ResultViewModel<dynamic>
+                    (new
+                    {
+                        total = count,
+                        page,
+                        pageSize,
+                        categories
+                    }
+                    )
+                );
+        }
+        catch(DbUpdateException e)
+        {
+            return StatusCode(500, new ResultViewModel<Category>("Não foi possível listar as categories."));
+        }
     }
 
     [Route("/api/v1/categories/{id}")]
     [HttpGet]
-    public async Task<IActionResult> GetByIdAsync(
+    public IActionResult GetById(
     [FromRoute] int id)
     {
-        var category = await _context.Categories.FirstOrDefaultAsync(x => x.Id == id);
+        var category = _categoryRepository.GetById(id);
         if (category != null)
             return Ok(new ResultViewModel<Category>(category));
         else
@@ -60,7 +64,7 @@ public class CategoryController : ControllerBase
 
     [Route("/api/v1/categories")]
     [HttpPost]
-    public async Task<IActionResult> PostCategoryAsync(
+    public IActionResult PostCategory(
         [FromBody] EditorCategoryViewModel category)
     {
 
@@ -74,8 +78,7 @@ public class CategoryController : ControllerBase
                 Color = category.Color,
                 Videos = null
             };
-            await _context.Categories.AddAsync(newCategory);
-            await _context.SaveChangesAsync();
+            _categoryRepository.Post(newCategory);
             return Created($"/api/categories/{newCategory.Id}", new ResultViewModel<Category>(newCategory));
         }
         catch (DbUpdateException e)
@@ -90,7 +93,7 @@ public class CategoryController : ControllerBase
 
     [Route("/api/v1/categories/{id}")]
     [HttpPut]
-    public async Task<IActionResult> UpdateCategoryAsync(
+    public IActionResult UpdateCategory(
         [FromRoute] int id,
         [FromBody] EditorCategoryViewModel category)
     {
@@ -99,15 +102,15 @@ public class CategoryController : ControllerBase
 
         try
         {
-            var categoryToUpdate = await _context.Categories.FirstOrDefaultAsync(x => x.Id == id);
+            var categoryToUpdate = _categoryRepository.GetById(id);
             if (categoryToUpdate != null)
             {
 
                 categoryToUpdate.Title = category.Title.ToUpper();
                 categoryToUpdate.Color = category.Color;
 
-                _context.Categories.Update(categoryToUpdate);
-                await _context.SaveChangesAsync();
+                _categoryRepository.Update(categoryToUpdate);
+                
                 return Ok(new ResultViewModel<Category>(categoryToUpdate));
             }
             else
@@ -121,16 +124,15 @@ public class CategoryController : ControllerBase
 
     [Route("/api/v1/categories/{id}")]
     [HttpDelete]
-    public async Task<IActionResult> DeleteCategoryAsync(
+    public IActionResult DeleteCategory(
         [FromRoute] int id)
     {
         try
         {
-            var categoryToDelete = await _context.Categories.FirstOrDefaultAsync(x => x.Id == id);
+            var categoryToDelete = _categoryRepository.GetById(id);
             if (categoryToDelete != null)
             {
-                _context.Categories.Remove(categoryToDelete);
-                await _context.SaveChangesAsync();
+                _categoryRepository.Delete(categoryToDelete);
                 return Ok(new ResultViewModel<Category>("Categoria deletada com sucesso."));
             }
             else
@@ -142,10 +144,10 @@ public class CategoryController : ControllerBase
         }
     }
 
-    [Route("/api/v1/categories/{id}/videos")]
+    [Route("/api/v1/categories/{idCategory}/videos")]
     [HttpGet]
     public async Task<IActionResult> GetVideosByCategory(
-        [FromRoute] int id,
+        [FromRoute] int idCategory,
         [FromQuery] int page = 0,
         [FromQuery] int pageSize = 5
     )

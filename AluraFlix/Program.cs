@@ -1,6 +1,7 @@
 using System.IO.Compression;
 using System.Text.Json.Serialization;
 using Aluraflix.Data;
+using AluraFlix.Repositories;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,6 +10,8 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AluraflixContext>(options =>
     options.UseSqlServer(connectionString));
+
+builder.Services.AddScoped<CategoryRepository>();
 
 builder.Services.AddResponseCompression(options =>{
         options.Providers.Add<GzipCompressionProvider>();
