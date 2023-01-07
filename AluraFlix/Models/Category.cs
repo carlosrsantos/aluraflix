@@ -38,12 +38,12 @@ public class Category
             if (string.IsNullOrEmpty(value))
                 throw new Exception("É preciso informar uma cor em Hexadecimal.");
             if (!IsValidColor(value))
-                throw new Exception("Formato de cor inválida. Tente seguindo o exemplo: #fff, #000");
+                throw new Exception("Formato de cor inválida. Tente seguindo o exemplo: #ffffff, #000000");
             _color = value;
 
         }
     }
-    public ICollection<Video> Videos { get; set; }
+    public ICollection<Video>? Videos { get; set; }
 
     public static bool IsValidColor(string color)
     {

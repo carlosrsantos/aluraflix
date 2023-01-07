@@ -6,7 +6,7 @@ namespace Aluraflix.Tests.Models
 {
     public class VideoTests : IDisposable
     {
-        public Video video;
+        public Video video = null!;
 
         public ITestOutputHelper testOutputHelper;
 

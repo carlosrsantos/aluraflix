@@ -12,9 +12,9 @@ public class AluraflixContext : DbContext
 
   }
 
-  public DbSet<Video> Videos { get; set; }
+  public DbSet<Video> Videos { get; set; } = null!;
 
-  public DbSet<Category> Categories { get; set; }
+  public DbSet<Category> Categories { get; set; } = null!;
   protected override void OnModelCreating(ModelBuilder modelBuilder)
   {
     modelBuilder.ApplyConfiguration(new VideoMap());

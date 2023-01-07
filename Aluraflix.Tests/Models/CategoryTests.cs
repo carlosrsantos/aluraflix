@@ -8,7 +8,7 @@ namespace Aluraflix.Tests.Models
 {
     public class CategoryTests : IDisposable
     {
-        public Category category { get; set; }
+        public Category category { get; set; } = null!;
 
         public ITestOutputHelper testOutputHelper;
 
@@ -34,7 +34,7 @@ namespace Aluraflix.Tests.Models
                 () => new Category().Color = color
             );
 
-            Assert.Equal("Formato de cor inválida. Tente seguindo o exemplo: #fff, #000", exception.Message);
+            Assert.Equal("Formato de cor inválida. Tente seguindo o exemplo: #ffffff, #000000", exception.Message);
         }
 
         [Fact]

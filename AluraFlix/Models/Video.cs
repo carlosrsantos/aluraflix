@@ -62,7 +62,7 @@ public class Video
     }
 
     public int CategoryId { get; set; } = 0;
-    public Category Category { get; set; } = null;
+    public Category Category { get; set; } = null!;
 
 
     public static bool IsValidUrl(string url)

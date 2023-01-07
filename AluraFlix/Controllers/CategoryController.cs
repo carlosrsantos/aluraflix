@@ -24,7 +24,7 @@ public class CategoryController : ControllerBase
 
     [Route("/api/v1/categories")]
     [HttpGet]
-    public async Task<IActionResult> GetAsync(
+    public IActionResult Get(
         [FromQuery] int page = 0,
         [FromQuery] int pageSize = 5
     )
@@ -44,7 +44,7 @@ public class CategoryController : ControllerBase
                     )
                 );
         }
-        catch(DbUpdateException e)
+        catch(DbUpdateException)
         {
             return StatusCode(500, new ResultViewModel<Category>("Não foi possível listar as categories."));
         }
@@ -81,7 +81,7 @@ public class CategoryController : ControllerBase
             _categoryRepository.Post(newCategory);
             return Created($"/api/categories/{newCategory.Id}", new ResultViewModel<Category>(newCategory));
         }
-        catch (DbUpdateException e)
+        catch (DbUpdateException)
         {
             return BadRequest(new ResultViewModel<Category>("Não foi possível incluir a categoria.Verifique as informações e tente novamente."));
         }
@@ -144,43 +144,23 @@ public class CategoryController : ControllerBase
         }
     }
 
-    [Route("/api/v1/categories/{idCategory}/videos")]
+    [Route("/api/v1/categories/{categoryName}/videos")]
     [HttpGet]
-    public async Task<IActionResult> GetVideosByCategory(
-        [FromRoute] int idCategory,
+    public IActionResult GetVideosByCategory(
+        [FromRoute] string categoryName,
         [FromQuery] int page = 0,
         [FromQuery] int pageSize = 5
     )
     {
         try
         {
-            var count = await _context
-                .Videos
-                .AsNoTracking()
-                .Where(x => x.Category.Id == id)
-                .CountAsync();
-            var videos = await _context
-                .Videos
-                .AsNoTracking()
-                .Include(x => x.Category)
-                .Where(x => x.Category.Id == id)
-                .Select(x => new ListVideosViewModel
-                {
-                    Id = x.Id,
-                    Title = x.Title,
-                    Description = x.Description,
-                    Url = x.Url,
-                    Category = x.Category.Title
-                }
-                )
-                .Skip(page * pageSize)
-                .Take(pageSize)
-                .OrderBy(x => x.Id)
-                .ToListAsync();
-                return Ok(new ResultViewModel<dynamic>
+            var total = _categoryRepository.TotalByCategory(categoryName);
+            var videos = _categoryRepository.GetVideosByCategory(
+                categoryName, page, pageSize);
+            return Ok(new ResultViewModel<dynamic>
                 (new
                 {
-                    total = count,
+                    total,
                     page = page,
                     pageSize,
                     videos

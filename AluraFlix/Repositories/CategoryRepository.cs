@@ -1,6 +1,6 @@
 using Aluraflix.Data;
 using Aluraflix.Models;
-using Aluraflix.ViewModel.Categories;
+using Aluraflix.ViewModels.Videos;
 using Microsoft.EntityFrameworkCore;
 
 namespace AluraFlix.Repositories;
@@ -23,7 +23,7 @@ public class CategoryRepository : IRepository<Category>
         .Take(pageSize)
         .OrderBy(x => x.Id)
         .ToList();
-    return categories;   
+    return categories;
   }
   public decimal? Total()
   {
@@ -37,7 +37,7 @@ public class CategoryRepository : IRepository<Category>
   }
 
   public Category Post(Category entity)
-  {    
+  {
     _context.Categories.Add(entity);
     _context.SaveChanges();
     return entity;
@@ -52,5 +52,39 @@ public class CategoryRepository : IRepository<Category>
   {
     _context.Categories.Remove(entity);
     _context.SaveChanges();
+  }
+
+  public decimal? TotalByCategory(string categoryName)
+  {
+    return _context
+            .Videos
+            .AsNoTracking()
+            .Where(x => x.Category.Title == categoryName)
+            .Count();
+  }
+  public IReadOnlyList<ListVideosViewModel> GetVideosByCategory(
+    string categoryName,
+    int page,
+    int pageSize
+  )
+  {
+    return _context
+                .Videos
+                .AsNoTracking()
+                .Include(x => x.Category)
+                .Where(x => x.Category.Title == categoryName)
+                .Select(x => new ListVideosViewModel
+                  {
+                    Id = x.Id,
+                    Title = x.Title,
+                    Description = x.Description,
+                    Url = x.Url,
+                    Category = x.Category.Title
+                  }
+                )
+                .Skip(page * pageSize)
+                .Take(pageSize)
+                .OrderBy(x => x.Id)
+                .ToList(); 
   }
 }

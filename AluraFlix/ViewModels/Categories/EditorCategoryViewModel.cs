@@ -9,6 +9,6 @@ public class EditorCategoryViewModel
 
   [Required(ErrorMessage = "É preciso informar uma cor em Hexadecimal.")]
   [RegularExpression(@"^#?([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})|([0-9a-fA-F]{3})$",
-  ErrorMessage = "Formato de cor inválida. Tente seguindo o exemplo: #fff, #000")]
+  ErrorMessage = "Formato de cor inválida. Tente seguindo o exemplo: #ffffff, #000000")]
   public string Color { get; set; }= "";
 }
