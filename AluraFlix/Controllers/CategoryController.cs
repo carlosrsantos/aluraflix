@@ -14,11 +14,9 @@ namespace Aluraflix.Controllers;
 public class CategoryController : ControllerBase
 {
     private CategoryRepository _categoryRepository;
-    private AluraflixContext _context;
 
-    public CategoryController(AluraflixContext context, CategoryRepository categoryRepository)
+    public CategoryController( CategoryRepository categoryRepository)
     {
-        _context = context;
         _categoryRepository = categoryRepository;
     }
 
